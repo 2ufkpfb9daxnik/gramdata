@@ -9,5 +9,4 @@ __pycache__/
 .DS_Store
 
 *.xz
-*.jsonl
 *.zst
