@@ -1,0 +1,7 @@
+1-gram 1 files
+2-gram 7 files
+3-gram 36 files
+4-gram 60 files
+5-gram 60 files
+6-gram 59 files
+7-gram 34 files

@@ -1,0 +1,3075 @@
+HPLT Monolingual Datasets 3.0
+Download v3.0
+In July 2025, the European HPLT initiative has completed a new release of its monolingual datasets, offering better data quality, more annotations and metadata, and greatly increased volume. HPLT Monolingual Datasets 3.0 comprise some 50 terabytes of compressed data, covering 198 languages. More than half of the data represents the English language. Not counting the English majority portion, the dataset offers some 11.5 billion documents, 40 trillion Unicode characters, or 13.5 trillion tokens (using the Gemma 3 vocabulary). Overall, HPLT 3.0 is about three times larger than the previous release and likely constitutes the largest generally available multilingual dataset.
+
+
+The dataset has been derived from some 7.2 petabytes of raw web crawls from the Internet Archive and the Common Crawl, spanning the period between 2012 and 2024. Text extraction from HTML documents was performed through the Trafilatura library, language identification with OpenLID 2.0, and deduplication, annotation, and filtering through the Monotextor pipeline.
+
+
+Except quality and size, other distinguishing properties of the HPLT Monolingual Dataset is its sorting by a language-independent estimate of document quality and the rich annotations and metadata, including web register labels (for 104 of the languages in release 3.0), document- and segment-level language identification, annotation of personally identifiable information, and provenance information from the original crawl. Release 3.0 also fixes a deficiency in the Chinese data in the previous release, where double-width punctuation had been over-zealously normalized.
+
+
+Except for Chinese, English, and Russian, each language-specific portion has been globally deduplicated.
+
+Data processing was performed on dedicated storage and compute resources at the Czech and Norwegian national HPC infrastructures CESNET and Sigma2 NRIS, as well as on the EuroHPC LUMI system. The HPLT download site is hosted at the Sigma2 NIRD datalake.
+
+
+How was the dataset processed?
+The chart below shows a schematic breakdown of the data processing pipeline. For the 3.0 release, in July 2025, only the monolingual portion is availble. For additional background, please see Section 3 in the HPLT deliverabe D7.2 HPLT Pipelines and Tools.
+
+dataset pipeline
+New in this release
+Reflects substantially more raw web data, primarily from the Common Crawl
+Additional metadata, including more information from the underlying crawl
+Upgrade to Trafilatura 2.0 with empirical fine-tuning of extraction parameters
+Plain-text and structured document representation, in simple, normalized XML
+Better language identification; refined codes for Arabic and Chinese
+Global deduplication for most languages; MinHash cluster size as metadata
+Annotation with Turku web register labels for more than half the languages
+Upgrade to newer, improved Web Docs Scorer (WDS) document quality estimates
+Global sorting within each language by WDS and sharding into WDS bins (10–5)
+Improved filtering for robots.txt opt-out, adult content, and credentials
+Improved deduplication pipeline (global deduplication for most languages)
+Data format
+The data is distributed as Zstandard-compressed JSONLines files, where each line represents one full document with its textual content and all metadata. Following is a mildly simplified example document:
+
+{"f": "./segments/1652663048462.97/warc/CC-MAIN-20220529072915-20220529102915-00247.warc.gz", "o": 424865140, "s": 9226, "rs": 51579,
+ "u": "https://lynghaug.no/news/oppdatering-angaende-rehabilitering?tm=",
+ "c": "text/html", "ts": "2022-05-29T08:06:01Z", "de": "utf-8",
+ "crawl_id": "CC-MAIN-2022-21",
+ "lang": ["nob_Latn", "nno_Latn", "dan_Latn"], "prob": [0.9963, 0.0026, 0.0011],
+ "text": "UKE 2 2022
+Styret har registrert en del misnøye i blant beboere angående manglende oppdatering i forhold til rehabiliteringen. Dette har styret stor forståelse for når vi har et så stort prosjekt i borettslaget vårt og som berører hjemmene våre.
+Vi har regelmessig kontakt/møter med Markhus og har drøftet denne problemstillingen.Det som ofte fører til frustrasjon er når en framdriftsplan er blitt lagt frem og det oppstår problemer som gjør at denne ikke blir holdt. Eksempler på problemer kan være leveranseproblemer, råvaremangel, sykdom og fravær i forhold til pandemi, skade på materiale eller uforutsette utfordringer som dukker opp når en gammel bygning skal rehabiliteres. Dette er årsaker som gjør at framdriftsplanen endres i stor og liten grad.
+Markhus har flere ganger gitt klar utrykk for at det ikke er anledning til å oppdatere styre hver gang det skjer en uforutsett hendelse. Det er heller ikke anledning for å gi en oppdatert framdriftsplan i forhold til den enkelte beboer. Det vil alltid bli gitt beskjed til den enkelte beboer når det kommer til å tømme altan, klargjøre leilighet og når det nærmer seg befaring. På befaring kan en stille de spørsmålene en sitter inne med angående sin egen leilighet. Styret har også opprettet en egen mailadresse som kun er relatert til spørsmål angående rehabiliteringen. Denne er det styret som administrerer og vil hjelpe så langt det går med spørsmål som kommer inn: lynghaug.borettslag@gmail.com.
+Styret oppfordrer beboere som har spørsmål angående rehabiliteringen å ta kontakt via mail, ikke via Facebook gruppen som er administrert av beboere. Styre vil ikke svare på henvendelser som blir stilt på denne siden. Hjemmesiden vil bli oppdatert når det er nyheter å oppdatere angående rehabiliteringen, men fremdriftsplanen som er tentativ må beboer være forberedt på at denne vil avvike fra tid til annen.
+Vil også minne om at samtlige i styret er helt alminnelige folk som alle har 100 % jobb i tillegg til styrearbeid. Vi driver styrearbeid på fritiden vår, og ønsker det beste for laget. Vil derfor oppfordre alle som har lyst å bidra til å melde seg som kandidat som styremedlem og vara når den tid kommer. Mer info angående det kommer i løpet av vinteren.",
+ "xml":"<doc fingerprint="e589be41f0c5445f">
+  <main>
+    <p>
+      <hi rend="#b">UKE 2 2022</hi>
+    </p>
+    <p><hi rend="#b"/>Styret har registrert en del misnøye i blant beboere angående manglende oppdatering i forhold til rehabiliteringen. Dette har styret stor forståelse for når vi har et så stort prosjekt i borettslaget vårt og som berører hjemmene våre.</p>
+    <p><lb/>Vi har regelmessig kontakt/møter med Markhus og har drøftet denne problemstillingen.Det som ofte fører til frustrasjon er når en framdriftsplan er blitt lagt frem og det oppstår problemer som gjør at denne ikke blir holdt. Eksempler på problemer kan være leveranseproblemer, råvaremangel, sykdom og fravær i forhold til pandemi, skade på materiale eller uforutsette utfordringer som dukker opp når en gammel bygning skal rehabiliteres. Dette er årsaker som gjør at framdriftsplanen endres i stor og liten grad. </p>
+    <p><lb/>Markhus har flere ganger gitt klar utrykk for at det ikke er anledning til å oppdatere styre hver gang det skjer en uforutsett hendelse. Det er heller ikke anledning for å gi en oppdatert framdriftsplan i forhold til den enkelte beboer. Det vil alltid bli gitt beskjed til den enkelte beboer når det kommer til å tømme altan, klargjøre leilighet og når det nærmer seg befaring. På befaring kan en stille de spørsmålene en sitter inne med angående sin egen leilighet. Styret har også opprettet en egen mailadresse som kun er relatert til spørsmål angående rehabiliteringen. Denne er det styret som administrerer og vil hjelpe så langt det går med spørsmål som kommer inn: lynghaug.borettslag@gmail.com. </p>
+    <p><lb/>Styret oppfordrer beboere som har spørsmål angående rehabiliteringen å ta kontakt via mail, ikke via Facebook gruppen som er administrert av beboere. Styre vil ikke svare på henvendelser som blir stilt på denne siden. Hjemmesiden vil bli oppdatert når det er nyheter å oppdatere angående rehabiliteringen, men fremdriftsplanen som er tentativ må beboer være forberedt på at denne vil avvike fra tid til annen.</p>
+    <p><lb/>Vil også minne om at samtlige i styret er helt alminnelige folk som alle har 100 % jobb i tillegg til styrearbeid. Vi driver styrearbeid på fritiden vår, og ønsker det beste for laget. Vil derfor oppfordre alle som har lyst å bidra til å melde seg som kandidat som styremedlem og vara når den tid kommer. Mer info angående det kommer i løpet av vinteren. </p>
+  </main>
+<comments/>
+</doc>",
+ "cluster_size": 8,
+ "seg_langs": ["ssw_Latn", "nob_Latn", "nob_Latn", "nob_Latn", "nob_Latn", "nob_Latn"],
+ "id": "bf4cf56d1c47d62db151874c8fa9d53f",
+ "filter": "keep", "pii": [[1428,1457]],
+ "doc_scores": [8.9, 10, 10, 10, 10, 10, 10, 4, 5.4, 10],
+ "web-register": {"MT":0.028, "LY": 0.059, "SP": 0.073, "ID": 0.158, "NA": 0.655, "HI": 0.17, "IN": 0.286, "OP": 0.194, "IP": 0.299,
+                  "it": 0.069, "ne": 0.164, "sr": 0.059, "nb": 0.613, "re": 0.066, "en": 0.036, "ra": 0.048, "dtp": 0.114,
+                  "fi": 0.098, "lt": 0.077, "rv": 0.055, "ob": 0.097, "rs": 0.098, "av": 0.142, "ds": 0.107, "ed": 0.072}}
+In each document, the text field provides the actual content, broken down into paragraph-like segments, and using newline characters to separate segments. The first 8 fields originate from HTML document extraction from the raw web archives, explained here. The text and xml fields provide plain and structured text, respectively, extracted by Trafilatura. The lang and prob fields record the top-three document-level language predications from OpenLID, with corresponding probabilties. For a description of the remainder of the metadata, please see here.
+
+Download
+For each language, the data is organized in smaller shards, sorted by WDS document quality estimates. For Russian (in Cyrillic script), for example, the file rus_Cyrl/10_1.jsonl.zst is the first (and only) shard in the top WDS bin (scored as exactly 10), and rus_Cyrl/9_1.jsonl.zst … rus_Cyrl/9_103.jsonl.zst are the 103 shards in the bin for scores greater or equal to WDS 9 and less than 10.
+
+The easiest way to download the data for a specific language is to use a command like wget -i with a language-specific mapping file containing full download addresses for all shards of this particular language, for example (for Crimean Tatar in Latin script):
+
+wget -O - https://data.hplt-project.org/three/sorted/crh_Latn.map \
+| wget -x -nH --cut-dirs=2 -i -
+
+The above command retrieves the map for chr_Latn and feeds it as a list of download addresses into a second wget invocation, requesting the creation of local directories (-x), but cutting off the host and first two directory components (-nH --cut-dirs=2).
+
+To download all available data, there is a larger mapping file for the full multilingual (excluding English) portion, amounting to a download of around 20 terabytes. The complete English data comprises some 30 terabytes and can be downloaded using its per-language mapping file. These can be retrieved using e.g. wget, and used as input directives for larger downloads, much like in the example above.
+
+wget https://data.hplt-project.org/three/sorted/multilingual.map
+
+wget https://data.hplt-project.org/three/sorted/eng_Latn.map
+
+To speed up large downloads, it can be beneficial to use multiple parallel connections, for example using the --max-threads option inwget. We recommend to limit download parallelization to 16–32 threads, to avoid server-side rate limitations, which should allow download rates of around 250 gigabytes per hours.
+
+Language families
+We visualize the proportions of available text per language as interactive “family trees”, either for just the monolingual portion (excluding English) or for all available data, counting in either characters or documents.
+
+Proportions of languages and families for multilingual data, by characters
+Proportions of languages and families for all data (including English), by characters
+Proportions of languages and families for multilingual data, by documents
+Proportions of languages and families for all data (including English), by documents
+treemap-image
+Statistics & validation
+Summary statistics per language are available for download as a structured manifest.json, also including download links for the individual data files, per-language maps, and sample documents from various quality bins. Additionally, each language subdirectory provides compressed lists of unique domains, full URLs, and what are called normalized document signatures, together with their frequencies of occurence, for example nob_Latn/.domains.zst, nob_Latn/.urls.zst, and nob_Latn/.signatures.zst for Norwegian Bokmål.
+
+
+The counts of documents per language or total storage sizes in the above statistics could be used to approximately validate each language sub-directory, but for more thorough validation of individual data files or full downloads, MD5 checksum files are provides with naming conventions parallel to the data and per-language map files, for example nob_Latn/.10_1.jsonl.md5 for the first data file in Norwegian Bokmål, and nob_Latn.md5 for its full set of data files.
+
+License and takedown
+License
+These data are released under this licensing scheme:
+
+We do not own any of the text from which these text data has been extracted.*
+We license the actual packaging of these text data under the Creative Commons CC0 license ("no rights reserved") .
+public-domain-logo
+Notice and take down policy
+Notice: Should you consider that our data contains material that is owned by you and should therefore not be reproduced here, please:
+
+Clearly identify yourself, with detailed contact data such as an address, telephone number or email address at which you can be contacted.
+Clearly identify the copyrighted work claimed to be infringed.
+Clearly identify the material that is claimed to be infringing and information reasonably sufficient to allow us to locate the material.
+You can reach us at hplt-datasets@ufal.mff.cuni.cz
+Take down: We will comply to legitimate requests by removing the affected sources from the next release of the corpora.
+
+*It is your resposibility that any use of the data complies with any applicable legal framework, such as, among others, the EU Copyright Directive 2019/790 and the General Data Protection Regulation 2018, as amended.
+
+Choose a language
+Central Kurdish - Arabic (ckb_Arab)
+Achinese (ace_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 7
+
+Tokens: 6.97k
+
+Chars: 13.86k
+
+Segments: 72
+
+13 downloads
+
+Achinese (ace_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 5.22k
+
+Tokens: 9.27M
+
+Chars: 25.40M
+
+Segments: 149.10k
+
+7 downloads
+
+Tunisian Arabic (aeb_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 177
+
+Tokens: 64.09k
+
+Chars: 177.53k
+
+Segments: 2.46k
+
+3 downloads
+
+Afrikaans (afr_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 2.14M
+
+Tokens: 2.69B
+
+Chars: 8.80B
+
+Segments: 56.66M
+
+4 downloads
+
+Tosk Albanian (als_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 11.18M
+
+Tokens: 10.08B
+
+Chars: 27.71B
+
+Segments: 162.46M
+
+3 downloads
+
+Amharic (amh_Ethi)
+
+Ethiopic (Geʻez)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 571.24k
+
+Tokens: 1.01B
+
+Chars: 1.67B
+
+Segments: 12.25M
+
+3 downloads
+
+Levantine Arabic (apc_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 253
+
+Tokens: 88.22k
+
+Chars: 238.18k
+
+Segments: 3.49k
+
+4 downloads
+
+Standard Arabic (arb_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 50.07M
+
+Tokens: 49.57B
+
+Chars: 147.18B
+
+Segments: 756.57M
+
+4 downloads
+
+Najdi Arabic (ars_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.81k
+
+Tokens: 968.87k
+
+Chars: 2.76M
+
+Segments: 38.43k
+
+2 downloads
+
+Moroccan Arabic (ary_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 17.50k
+
+Tokens: 10.71M
+
+Chars: 32.80M
+
+Segments: 184.65k
+
+1 download
+
+Egyptian Arabic (arz_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 94.13k
+
+Tokens: 62.40M
+
+Chars: 176.26M
+
+Segments: 1.12M
+
+1 download
+
+English (eng_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 18.06B
+
+Tokens: 16.28T
+
+Chars: 72.34T
+
+Segments: 435.23B
+
+9 downloads
+
+Assamese (asm_Beng)
+
+Bengali (Bangla)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 446.31k
+
+Tokens: 479.37M
+
+Chars: 1.15B
+
+Segments: 6.54M
+
+2 downloads
+
+Asturian (ast_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 247.53k
+
+Tokens: 308.15M
+
+Chars: 1.01B
+
+Segments: 5.08M
+
+2 downloads
+
+Awadhi (awa_Deva)
+
+Devanagari (Nagari)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 34.19k
+
+Tokens: 20.35M
+
+Chars: 65.02M
+
+Segments: 354.23k
+
+1 download
+
+Central Aymara (ayr_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 7.45k
+
+Tokens: 7.54M
+
+Chars: 19.80M
+
+Segments: 120.16k
+
+South Azerbaijani (azb_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 94.76k
+
+Tokens: 134.71M
+
+Chars: 296.10M
+
+Segments: 2.58M
+
+1 download
+
+North Azerbaijani (azj_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 11.07M
+
+Tokens: 15.96B
+
+Chars: 41.26B
+
+Segments: 244.05M
+
+Bashkir (bak_Cyrl)
+
+Cyrillic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 275.72k
+
+Tokens: 393.32M
+
+Chars: 803.72M
+
+Segments: 3.97M
+
+Bambara (bam_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 3.64k
+
+Tokens: 4.88M
+
+Chars: 11.28M
+
+Segments: 64.68k
+
+Balinese (ban_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 16.00k
+
+Tokens: 34.17M
+
+Chars: 114.84M
+
+Segments: 1.02M
+
+Belarusian (bel_Cyrl)
+
+Cyrillic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 3.00M
+
+Tokens: 4.08B
+
+Chars: 10.18B
+
+Segments: 55.99M
+
+5 downloads
+
+Bemba (Zambia) (bem_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 5.34k
+
+Tokens: 12.89M
+
+Chars: 34.21M
+
+Segments: 142.92k
+
+Bengali (ben_Beng)
+
+Bengali (Bangla)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 25.56M
+
+Tokens: 16.36B
+
+Chars: 62.56B
+
+Segments: 359.08M
+
+Bhojpuri (bho_Deva)
+
+Devanagari (Nagari)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 32.79k
+
+Tokens: 26.88M
+
+Chars: 80.53M
+
+Segments: 473.38k
+
+Banjar (bjn_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.31k
+
+Tokens: 2.28M
+
+Chars: 4.61M
+
+Segments: 30.40k
+
+Banjar (bjn_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 21.23k
+
+Tokens: 19.08M
+
+Chars: 67.04M
+
+Segments: 364.04k
+
+Tibetan (bod_Tibt)
+
+Tibetan
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 27.86k
+
+Tokens: 117.87M
+
+Chars: 178.28M
+
+Segments: 481.09k
+
+Bosnian (bos_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 37.08M
+
+Tokens: 32.04B
+
+Chars: 99.27B
+
+Segments: 641.53M
+
+1 download
+
+Buginese (bug_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.17k
+
+Tokens: 3.12M
+
+Chars: 8.63M
+
+Segments: 32.29k
+
+Bulgarian (bul_Cyrl)
+
+Cyrillic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 42.97M
+
+Tokens: 48.99B
+
+Chars: 145.76B
+
+Segments: 978.88M
+
+2 downloads
+
+Catalan (cat_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 26.41M
+
+Tokens: 22.54B
+
+Chars: 75.43B
+
+Segments: 460.85M
+
+1 download
+
+Cebuano (ceb_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 354.24k
+
+Tokens: 384.04M
+
+Chars: 1.26B
+
+Segments: 6.78M
+
+Czech (ces_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 107.80M
+
+Tokens: 126.25B
+
+Chars: 367.84B
+
+Segments: 2.47B
+
+2 downloads
+
+Chokwe (cjk_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.08k
+
+Tokens: 2.65M
+
+Chars: 7.00M
+
+Segments: 29.65k
+
+Central Kurdish (ckb_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 352.13k
+
+Tokens: 472.37M
+
+Chars: 956.81M
+
+Segments: 4.98M
+
+1 download
+
+Mandarin Chinese (cmn_Hans)
+
+Han (Simplified variant)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 2.21B
+
+Tokens: 2.97T
+
+Chars: 4.14T
+
+Segments: 60.29B
+
+3 downloads
+
+Mandarin Chinese (cmn_Hant)
+
+Han (Traditional variant)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 113.44M
+
+Tokens: 147.20B
+
+Chars: 195.32B
+
+Segments: 2.37B
+
+Crimean Tatar (crh_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 120.31k
+
+Tokens: 128.10M
+
+Chars: 315.93M
+
+Segments: 1.53M
+
+Welsh (cym_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.08M
+
+Tokens: 1.23B
+
+Chars: 3.19B
+
+Segments: 21.10M
+
+Danish (dan_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 52.50M
+
+Tokens: 62.72B
+
+Chars: 208.28B
+
+Segments: 1.33B
+
+7 downloads
+
+German (deu_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 645.36M
+
+Tokens: 609.31B
+
+Chars: 2.43T
+
+Segments: 14.38B
+
+2 downloads
+
+Southwestern Dinka (dik_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.22k
+
+Tokens: 3.33M
+
+Chars: 6.67M
+
+Segments: 32.64k
+
+Dyula (dyu_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.75k
+
+Tokens: 3.49M
+
+Chars: 7.37M
+
+Segments: 45.17k
+
+1 download
+
+Dzongkha (dzo_Tibt)
+
+Tibetan
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 90
+
+Tokens: 20.53M
+
+Chars: 19.89M
+
+Segments: 88.55k
+
+Standard Estonian (ekk_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 13.74M
+
+Tokens: 20.62B
+
+Chars: 60.67B
+
+Segments: 425.93M
+
+Modern Greek (1453-) (ell_Grek)
+
+Greek
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 87.39M
+
+Tokens: 115.57B
+
+Chars: 290.06B
+
+Segments: 1.87B
+
+Esperanto (epo_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 715.29k
+
+Tokens: 1.25B
+
+Chars: 3.73B
+
+Segments: 23.25M
+
+1 download
+
+Basque (eus_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 3.22M
+
+Tokens: 3.19B
+
+Chars: 9.55B
+
+Segments: 55.93M
+
+2 downloads
+
+Ewe (ewe_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 7.14k
+
+Tokens: 18.69M
+
+Chars: 39.95M
+
+Segments: 218.08k
+
+Faroese (fao_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 323.75k
+
+Tokens: 272.71M
+
+Chars: 706.50M
+
+Segments: 5.36M
+
+Fijian (fij_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 12.07k
+
+Tokens: 21.07M
+
+Chars: 59.39M
+
+Segments: 283.59k
+
+Filipino (fil_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 3.44M
+
+Tokens: 4.11B
+
+Chars: 14.12B
+
+Segments: 83.70M
+
+1 download
+
+Finnish (fin_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 49.56M
+
+Tokens: 73.93B
+
+Chars: 219.23B
+
+Segments: 1.37B
+
+1 download
+
+Fon (fon_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.47k
+
+Tokens: 3.38M
+
+Chars: 6.40M
+
+Segments: 24.99k
+
+French (fra_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 603.88M
+
+Tokens: 584.96B
+
+Chars: 2.27T
+
+Segments: 15.65B
+
+2 downloads
+
+Friulian (fur_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 55.02k
+
+Tokens: 70.85M
+
+Chars: 214.18M
+
+Segments: 1.11M
+
+Nigerian Fulfulde (fuv_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 9.97k
+
+Tokens: 14.94M
+
+Chars: 34.95M
+
+Segments: 193.40k
+
+West Central Oromo (gaz_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 63.06k
+
+Tokens: 92.83M
+
+Chars: 251.12M
+
+Segments: 1.11M
+
+4 downloads
+
+Scottish Gaelic (gla_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 204.01k
+
+Tokens: 227.70M
+
+Chars: 629.98M
+
+Segments: 3.77M
+
+1 download
+
+Irish (gle_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 786.69k
+
+Tokens: 1.09B
+
+Chars: 2.96B
+
+Segments: 18.07M
+
+Galician (glg_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 4.03M
+
+Tokens: 3.12B
+
+Chars: 11.70B
+
+Segments: 66.57M
+
+Paraguayan Guaraní (gug_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 98.97k
+
+Tokens: 74.31M
+
+Chars: 241.20M
+
+Segments: 1.70M
+
+14 downloads
+
+Gujarati (guj_Gujr)
+
+Gujarati
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 3.46M
+
+Tokens: 3.33B
+
+Chars: 8.39B
+
+Segments: 46.75M
+
+Haitian (hat_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 377.11k
+
+Tokens: 404.90M
+
+Chars: 1.19B
+
+Segments: 7.87M
+
+Hausa (hau_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 743.84k
+
+Tokens: 797.02M
+
+Chars: 2.36B
+
+Segments: 15.11M
+
+Hebrew (heb_Hebr)
+
+Hebrew
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 26.08M
+
+Tokens: 37.02B
+
+Chars: 79.11B
+
+Segments: 647.51M
+
+Hindi (hin_Deva)
+
+Devanagari (Nagari)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 36.33M
+
+Tokens: 26.77B
+
+Chars: 99.75B
+
+Segments: 563.70M
+
+Chhattisgarhi (hne_Deva)
+
+Devanagari (Nagari)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 6.32k
+
+Tokens: 7.47M
+
+Chars: 20.51M
+
+Segments: 95.63k
+
+Croatian (hrv_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 31.16M
+
+Tokens: 35.15B
+
+Chars: 109.11B
+
+Segments: 715.45M
+
+2 downloads
+
+Hungarian (hun_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 75.12M
+
+Tokens: 102.31B
+
+Chars: 295.71B
+
+Segments: 1.78B
+
+1 download
+
+Armenian (hye_Armn)
+
+Armenian
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 6.12M
+
+Tokens: 9.04B
+
+Chars: 16.64B
+
+Segments: 104.49M
+
+Igbo (ibo_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 172.84k
+
+Tokens: 259.82M
+
+Chars: 603.41M
+
+Segments: 4.01M
+
+1 download
+
+Iloko (ilo_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 43.85k
+
+Tokens: 44.41M
+
+Chars: 134.87M
+
+Segments: 851.05k
+
+Indonesian (ind_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 176.11M
+
+Tokens: 142.12B
+
+Chars: 610.52B
+
+Segments: 3.54B
+
+3 downloads
+
+Icelandic (isl_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 4.30M
+
+Tokens: 6.15B
+
+Chars: 15.68B
+
+Segments: 93.45M
+
+Italian (ita_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 362.99M
+
+Tokens: 335.46B
+
+Chars: 1.30T
+
+Segments: 7.54B
+
+5 downloads
+
+Javanese (jav_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 239.46k
+
+Tokens: 281.12M
+
+Chars: 905.50M
+
+Segments: 6.08M
+
+Japanese (jpn_Jpan)
+
+Japanese (alias for Han + Hiragana + Katakana)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 667.40M
+
+Tokens: 876.00B
+
+Chars: 1.50T
+
+Segments: 35.79B
+
+6 downloads
+
+Kabyle (kab_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 15.04k
+
+Tokens: 21.45M
+
+Chars: 49.10M
+
+Segments: 375.22k
+
+2 downloads
+
+Kachin (kac_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 9.03k
+
+Tokens: 10.26M
+
+Chars: 28.52M
+
+Segments: 149.29k
+
+Kamba (Kenya) (kam_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.04k
+
+Tokens: 1.77M
+
+Chars: 3.63M
+
+Segments: 13.06k
+
+Kannada (kan_Knda)
+
+Kannada
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 4.36M
+
+Tokens: 3.91B
+
+Chars: 10.01B
+
+Segments: 56.90M
+
+1 download
+
+Kashmiri (kas_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.07k
+
+Tokens: 1.76M
+
+Chars: 3.56M
+
+Segments: 25.45k
+
+Kashmiri (kas_Deva)
+
+Devanagari (Nagari)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 66
+
+Tokens: 147.95k
+
+Chars: 251.93k
+
+Segments: 571
+
+Georgian (kat_Geor)
+
+Georgian (Mkhedruli and Mtavruli)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 6.13M
+
+Tokens: 7.55B
+
+Chars: 17.01B
+
+Segments: 105.89M
+
+1 download
+
+Kazakh (kaz_Cyrl)
+
+Cyrillic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 5.12M
+
+Tokens: 7.34B
+
+Chars: 17.21B
+
+Segments: 100.64M
+
+Kabiyè (kbp_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 4.77k
+
+Tokens: 12.02M
+
+Chars: 19.56M
+
+Segments: 68.24k
+
+Kabuverdianu (kea_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 3.08k
+
+Tokens: 2.43M
+
+Chars: 7.27M
+
+Segments: 50.81k
+
+Halh Mongolian (khk_Cyrl)
+
+Cyrillic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 3.48M
+
+Tokens: 6.33B
+
+Chars: 13.53B
+
+Segments: 80.62M
+
+Khmer (khm_Khmr)
+
+Khmer
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.32M
+
+Tokens: 2.50B
+
+Chars: 4.98B
+
+Segments: 20.39M
+
+1 download
+
+Kikuyu (kik_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 8.63k
+
+Tokens: 7.78M
+
+Chars: 17.99M
+
+Segments: 111.89k
+
+Kinyarwanda (kin_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 202.52k
+
+Tokens: 254.97M
+
+Chars: 693.55M
+
+Segments: 3.73M
+
+Kirghiz (kir_Cyrl)
+
+Cyrillic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.49M
+
+Tokens: 1.54B
+
+Chars: 3.80B
+
+Segments: 20.27M
+
+Kimbundu (kmb_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.18k
+
+Tokens: 1.90M
+
+Chars: 4.90M
+
+Segments: 20.70k
+
+Northern Kurdish (kmr_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 693.89k
+
+Tokens: 791.72M
+
+Chars: 1.96B
+
+Segments: 12.06M
+
+Central Kanuri (knc_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 912
+
+Tokens: 1.52M
+
+Chars: 2.34M
+
+Segments: 26.74k
+
+Central Kanuri (knc_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.39k
+
+Tokens: 3.38M
+
+Chars: 7.12M
+
+Segments: 30.47k
+
+Korean (kor_Hang)
+
+Hangul (Hangŭl, Hangeul)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 74.79M
+
+Tokens: 97.58B
+
+Chars: 164.31B
+
+Segments: 2.34B
+
+3 downloads
+
+Kituba (Democratic Republic of Congo) (ktu_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 4.42k
+
+Tokens: 8.18M
+
+Chars: 22.40M
+
+Segments: 86.55k
+
+1 download
+
+Lao (lao_Laoo)
+
+Lao
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 87.66k
+
+Tokens: 181.45M
+
+Chars: 288.25M
+
+Segments: 1.05M
+
+Ligurian (lij_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 8.61k
+
+Tokens: 18.92M
+
+Chars: 35.58M
+
+Segments: 243.70k
+
+2 downloads
+
+Limburgan (lim_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 339.71k
+
+Tokens: 371.98M
+
+Chars: 1.11B
+
+Segments: 6.56M
+
+Lingala (lin_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 13.56k
+
+Tokens: 27.18M
+
+Chars: 81.33M
+
+Segments: 441.55k
+
+Lithuanian (lit_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 20.41M
+
+Tokens: 28.77B
+
+Chars: 80.72B
+
+Segments: 511.15M
+
+Lombard (lmo_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 116.73k
+
+Tokens: 98.95M
+
+Chars: 289.87M
+
+Segments: 1.61M
+
+Latgalian (ltg_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 14.14k
+
+Tokens: 18.44M
+
+Chars: 45.34M
+
+Segments: 218.64k
+
+Luxembourgish (ltz_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 407.48k
+
+Tokens: 433.24M
+
+Chars: 1.34B
+
+Segments: 7.97M
+
+Luba-Lulua (lua_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.63k
+
+Tokens: 4.53M
+
+Chars: 12.39M
+
+Segments: 50.74k
+
+Ganda (lug_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 49.60k
+
+Tokens: 46.93M
+
+Chars: 123.98M
+
+Segments: 738.30k
+
+Luo (Kenya and Tanzania) (luo_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 4.61k
+
+Tokens: 7.92M
+
+Chars: 21.21M
+
+Segments: 103.97k
+
+Lushai (lus_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 294.93k
+
+Tokens: 348.68M
+
+Chars: 998.55M
+
+Segments: 5.47M
+
+Standard Latvian (lvs_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 11.32M
+
+Tokens: 17.24B
+
+Chars: 44.63B
+
+Segments: 296.73M
+
+2 downloads
+
+Magahi (mag_Deva)
+
+Devanagari (Nagari)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 513
+
+Tokens: 1.82M
+
+Chars: 4.75M
+
+Segments: 75.61k
+
+Maithili (mai_Deva)
+
+Devanagari (Nagari)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 28.87k
+
+Tokens: 44.30M
+
+Chars: 116.82M
+
+Segments: 865.08k
+
+Malayalam (mal_Mlym)
+
+Malayalam
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 8.16M
+
+Tokens: 6.64B
+
+Chars: 19.08B
+
+Segments: 90.10M
+
+Marathi (mar_Deva)
+
+Devanagari (Nagari)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 6.46M
+
+Tokens: 4.68B
+
+Chars: 16.20B
+
+Segments: 81.84M
+
+2 downloads
+
+Minangkabau (min_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 29.39k
+
+Tokens: 26.31M
+
+Chars: 85.11M
+
+Segments: 596.78k
+
+1 download
+
+Macedonian (mkd_Cyrl)
+
+Cyrillic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 6.79M
+
+Tokens: 5.93B
+
+Chars: 16.42B
+
+Segments: 97.61M
+
+Maltese (mlt_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 752.74k
+
+Tokens: 981.80M
+
+Chars: 2.46B
+
+Segments: 17.22M
+
+2 downloads
+
+Manipuri (mni_Beng)
+
+Bengali (Bangla)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 7.57k
+
+Tokens: 17.06M
+
+Chars: 36.44M
+
+Segments: 189.34k
+
+Mossi (mos_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.89k
+
+Tokens: 5.82M
+
+Chars: 11.64M
+
+Segments: 48.00k
+
+Maori (mri_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 203.01k
+
+Tokens: 239.82M
+
+Chars: 685.39M
+
+Segments: 4.12M
+
+6 downloads
+
+Burmese (mya_Mymr)
+
+Myanmar (Burmese)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.98M
+
+Tokens: 4.25B
+
+Chars: 7.22B
+
+Segments: 36.84M
+
+1 download
+
+Dutch (nld_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 200.69M
+
+Tokens: 173.41B
+
+Chars: 643.03B
+
+Segments: 4.25B
+
+2 downloads
+
+Norwegian Nynorsk (nno_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.51M
+
+Tokens: 1.59B
+
+Chars: 4.93B
+
+Segments: 31.94M
+
+1 download
+
+Norwegian Bokmål (nob_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 36.49M
+
+Tokens: 51.16B
+
+Chars: 172.13B
+
+Segments: 888.91M
+
+3 downloads
+
+Nepali (individual language) (npi_Deva)
+
+Devanagari (Nagari)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 6.21M
+
+Tokens: 4.88B
+
+Chars: 15.08B
+
+Segments: 76.25M
+
+1 download
+
+Pedi (nso_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 8.18k
+
+Tokens: 15.77M
+
+Chars: 42.25M
+
+Segments: 234.07k
+
+Nuer (nus_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 139
+
+Tokens: 766.27k
+
+Chars: 1.42M
+
+Segments: 3.28k
+
+Chichewa (nya_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 177.89k
+
+Tokens: 231.98M
+
+Chars: 661.41M
+
+Segments: 4.29M
+
+4 downloads
+
+Occitan (post 1500) (oci_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 106.46k
+
+Tokens: 115.33M
+
+Chars: 356.40M
+
+Segments: 2.07M
+
+Odia (ory_Orya)
+
+Oriya (Odia)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.30M
+
+Tokens: 1.54B
+
+Chars: 2.21B
+
+Segments: 9.44M
+
+Pangasinan (pag_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 4.50k
+
+Tokens: 14.61M
+
+Chars: 42.04M
+
+Segments: 171.56k
+
+Panjabi (pan_Guru)
+
+Gurmukhi
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.52M
+
+Tokens: 2.32B
+
+Chars: 4.28B
+
+Segments: 22.17M
+
+Papiamento (pap_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 181.78k
+
+Tokens: 136.82M
+
+Chars: 464.89M
+
+Segments: 2.41M
+
+Southern Pashto (pbt_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 918.71k
+
+Tokens: 1.01B
+
+Chars: 2.45B
+
+Segments: 15.75M
+
+Iranian Persian (pes_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 124.02M
+
+Tokens: 157.76B
+
+Chars: 475.02B
+
+Segments: 3.73B
+
+9 downloads
+
+Plateau Malagasy (plt_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 365.68k
+
+Tokens: 433.98M
+
+Chars: 1.24B
+
+Segments: 6.75M
+
+Polish (pol_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 255.89M
+
+Tokens: 270.10B
+
+Chars: 883.72B
+
+Segments: 5.64B
+
+1 download
+
+Portuguese (por_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 342.53M
+
+Tokens: 318.85B
+
+Chars: 1.24T
+
+Segments: 8.09B
+
+2 downloads
+
+Dari (prs_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 2.46M
+
+Tokens: 2.00B
+
+Chars: 6.39B
+
+Segments: 47.58M
+
+1 download
+
+Ayacucho Quechua (quy_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 20.20k
+
+Tokens: 42.77M
+
+Chars: 114.00M
+
+Segments: 565.16k
+
+Romanian (ron_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 95.91M
+
+Tokens: 102.53B
+
+Chars: 339.29B
+
+Segments: 2.17B
+
+Rundi (run_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 235.31k
+
+Tokens: 178.85M
+
+Chars: 494.91M
+
+Segments: 2.87M
+
+Russian (rus_Cyrl)
+
+Cyrillic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 3.30B
+
+Tokens: 4.40T
+
+Chars: 15.95T
+
+Segments: 100.23B
+
+1 download
+
+Sango (sag_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 2.64k
+
+Tokens: 5.18M
+
+Chars: 14.08M
+
+Segments: 55.77k
+
+Sanskrit (san_Deva)
+
+Devanagari (Nagari)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 59.82k
+
+Tokens: 185.16M
+
+Chars: 429.32M
+
+Segments: 3.91M
+
+Santali (sat_Olck)
+
+Ol Chiki (Ol Cemet’, Ol, Santali)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 4.72k
+
+Tokens: 11.11M
+
+Chars: 11.61M
+
+Segments: 75.50k
+
+Sicilian (scn_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 91.61k
+
+Tokens: 119.95M
+
+Chars: 369.06M
+
+Segments: 2.04M
+
+Shan (shn_Mymr)
+
+Myanmar (Burmese)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 12.29k
+
+Tokens: 29.04M
+
+Chars: 38.50M
+
+Segments: 157.40k
+
+Sinhala (sin_Sinh)
+
+Sinhala
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.80M
+
+Tokens: 2.92B
+
+Chars: 5.98B
+
+Segments: 39.03M
+
+Slovak (slk_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 36.37M
+
+Tokens: 40.21B
+
+Chars: 116.25B
+
+Segments: 768.39M
+
+1 download
+
+Slovenian (slv_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 16.81M
+
+Tokens: 20.92B
+
+Chars: 62.46B
+
+Segments: 402.19M
+
+Samoan (smo_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 161.10k
+
+Tokens: 220.45M
+
+Chars: 583.68M
+
+Segments: 3.30M
+
+Shona (sna_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 183.01k
+
+Tokens: 217.01M
+
+Chars: 628.52M
+
+Segments: 3.78M
+
+Sindhi (snd_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 363.83k
+
+Tokens: 496.11M
+
+Chars: 1.09B
+
+Segments: 6.28M
+
+Somali (som_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.42M
+
+Tokens: 1.10B
+
+Chars: 3.16B
+
+Segments: 18.76M
+
+1 download
+
+Southern Sotho (sot_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 152.06k
+
+Tokens: 213.92M
+
+Chars: 604.69M
+
+Segments: 3.62M
+
+1 download
+
+Spanish (spa_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 725.58M
+
+Tokens: 658.97B
+
+Chars: 2.75T
+
+Segments: 16.33B
+
+2 downloads
+
+Sardinian (srd_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 66.66k
+
+Tokens: 57.96M
+
+Chars: 175.23M
+
+Segments: 792.09k
+
+Serbian (srp_Cyrl)
+
+Cyrillic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 7.16M
+
+Tokens: 16.52B
+
+Chars: 27.92B
+
+Segments: 171.98M
+
+2 downloads
+
+Swati (ssw_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 2.79k
+
+Tokens: 5.63M
+
+Chars: 15.04M
+
+Segments: 94.98k
+
+Sundanese (sun_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 185.38k
+
+Tokens: 196.54M
+
+Chars: 638.09M
+
+Segments: 4.11M
+
+Swedish (swe_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 97.72M
+
+Tokens: 111.78B
+
+Chars: 375.11B
+
+Segments: 2.48B
+
+2 downloads
+
+Swahili (individual language) (swh_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.94M
+
+Tokens: 2.06B
+
+Chars: 6.21B
+
+Segments: 43.18M
+
+Silesian (szl_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 48.39k
+
+Tokens: 48.42M
+
+Chars: 126.59M
+
+Segments: 639.83k
+
+Tamil (tam_Taml)
+
+Tamil
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 11.27M
+
+Tokens: 9.03B
+
+Chars: 32.73B
+
+Segments: 205.22M
+
+1 download
+
+Tamasheq (taq_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 827
+
+Tokens: 4.55M
+
+Chars: 8.97M
+
+Segments: 48.12k
+
+Tamasheq (taq_Tfng)
+
+Tifinagh (Berber)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 5
+
+Tokens: 27.63k
+
+Chars: 26.80k
+
+Segments: 171
+
+Tatar (tat_Cyrl)
+
+Cyrillic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.26M
+
+Tokens: 1.58B
+
+Chars: 3.69B
+
+Segments: 22.92M
+
+1 download
+
+Telugu (tel_Telu)
+
+Telugu
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 6.24M
+
+Tokens: 5.55B
+
+Chars: 15.07B
+
+Segments: 81.96M
+
+1 download
+
+Tajik (tgk_Cyrl)
+
+Cyrillic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 2.57M
+
+Tokens: 3.34B
+
+Chars: 7.95B
+
+Segments: 41.85M
+
+1 download
+
+Thai (tha_Thai)
+
+Thai
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 40.01M
+
+Tokens: 55.76B
+
+Chars: 154.51B
+
+Segments: 645.14M
+
+1 download
+
+Tigrinya (tir_Ethi)
+
+Ethiopic (Geʻez)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 67.62k
+
+Tokens: 138.31M
+
+Chars: 191.87M
+
+Segments: 1.25M
+
+1 download
+
+Tok Pisin (tpi_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 12.43k
+
+Tokens: 19.37M
+
+Chars: 58.39M
+
+Segments: 266.51k
+
+Tswana (tsn_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 9.34k
+
+Tokens: 19.30M
+
+Chars: 53.55M
+
+Segments: 224.17k
+
+Tsonga (tso_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 11.68k
+
+Tokens: 22.45M
+
+Chars: 58.04M
+
+Segments: 292.35k
+
+Turkmen (tuk_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 378.45k
+
+Tokens: 370.58M
+
+Chars: 902.75M
+
+Segments: 4.86M
+
+Tumbuka (tum_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 5.65k
+
+Tokens: 12.65M
+
+Chars: 33.03M
+
+Segments: 157.26k
+
+Turkish (tur_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 159.47M
+
+Tokens: 149.98B
+
+Chars: 512.61B
+
+Segments: 3.11B
+
+1 download
+
+Twi (twi_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 7.90k
+
+Tokens: 15.95M
+
+Chars: 35.62M
+
+Segments: 213.57k
+
+Uighur (uig_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 645.40k
+
+Tokens: 1.20B
+
+Chars: 2.16B
+
+Segments: 10.48M
+
+Ukrainian (ukr_Cyrl)
+
+Cyrillic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 80.03M
+
+Tokens: 81.22B
+
+Chars: 244.66B
+
+Segments: 1.61B
+
+2 downloads
+
+Umbundu (umb_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 2.12k
+
+Tokens: 4.46M
+
+Chars: 12.05M
+
+Segments: 43.46k
+
+Urdu (urd_Arab)
+
+Arabic
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 7.21M
+
+Tokens: 6.13B
+
+Chars: 19.25B
+
+Segments: 96.12M
+
+1 download
+
+Northern Uzbek (uzn_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 1.88M
+
+Tokens: 2.34B
+
+Chars: 6.51B
+
+Segments: 32.94M
+
+1 download
+
+Venetian (vec_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 102.32k
+
+Tokens: 86.18M
+
+Chars: 276.15M
+
+Segments: 1.32M
+
+Vietnamese (vie_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 145.40M
+
+Tokens: 142.36B
+
+Chars: 475.63B
+
+Segments: 3.59B
+
+10 downloads
+
+Waray (Philippines) (war_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 9.35k
+
+Tokens: 8.01M
+
+Chars: 25.42M
+
+Segments: 119.25k
+
+Wolof (wol_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 5.06k
+
+Tokens: 8.37M
+
+Chars: 20.52M
+
+Segments: 161.41k
+
+1 download
+
+Xhosa (xho_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 253.81k
+
+Tokens: 327.80M
+
+Chars: 863.04M
+
+Segments: 6.64M
+
+Eastern Yiddish (ydd_Hebr)
+
+Hebrew
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 162.59k
+
+Tokens: 360.24M
+
+Chars: 715.21M
+
+Segments: 4.31M
+
+Yoruba (yor_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 171.25k
+
+Tokens: 230.28M
+
+Chars: 559.87M
+
+Segments: 3.62M
+
+1 download
+
+Yue Chinese (yue_Hant)
+
+Han (Traditional variant)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 217.26k
+
+Tokens: 213.83M
+
+Chars: 277.00M
+
+Segments: 4.62M
+
+Standard Moroccan Tamazight (zgh_Tfng)
+
+Tifinagh (Berber)
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 3.49k
+
+Tokens: 6.61M
+
+Chars: 6.55M
+
+Segments: 34.99k
+
+3 downloads
+
+Standard Malay (zsm_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 17.37M
+
+Tokens: 18.30B
+
+Chars: 71.23B
+
+Segments: 503.87M
+
+4 downloads
+
+Zulu (zul_Latn)
+
+Latin
+Creative Commons CC0 license
+Source: CC/IA
+
+Docs: 336.44k
+
+Tokens: 410.54M
+
+Chars: 1.12B
+
+Segments: 8.02M
+
+Ⓒ HPLT 2025
+
+horizon-logoukri-logo
+This project has received funding from the European Union’s Horizon Europe research and innovation programme under grant agreement No 101070350 and from UK Research and Innovation (UKRI) under the UK government’s Horizon Europe funding guarantee [grant number 10052546]
+
+eu flag
+The contents of this publication are the sole responsibility of the HPLT consortium and do not necessarily reflect the opinion of the European Union.
+
+Icons by Lucide
+
+x icon
+github icon
+Visitor count
+
