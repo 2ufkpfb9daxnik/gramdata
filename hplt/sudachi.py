@@ -37,8 +37,16 @@ SPLIT_MODE = sud_tokenizer.Tokenizer.SplitMode.B  # B は MeCab と近い粒度�
 _pending_files = []
 _repo_root = None
 
-# 日本語判定（ひらがな/カタカナ/漢字を含むトークンを日本語とみなす）
-_JP_RE = re.compile(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]')
+# 日本語判定（ひらがな/カタカナ/漢字 と CJK 句読点・全角記号を含むトークンを日本語とみなす）
+_JP_RE = re.compile(
+    r'['
+    r'\u3040-\u309F'  # ひらがな
+    r'\u30A0-\u30FF'  # カタカナ
+    r'\u4E00-\u9FFF'  # 漢字（CJK 統合漢字）
+    r'\u3000-\u303F'  # CJK Symbols and Punctuation（。、・「」等）
+    r'\uFF00-\uFFEF'  # 半角/全角記号
+    r']'
+)
 
 def is_japanese_token(s: str) -> bool:
     return bool(_JP_RE.search(s))
