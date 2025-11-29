@@ -1,9 +1,10 @@
 """
-JSONL ("10_*.jsonl") を MeCab で解析して 1-7 形態素 n-gram を集計・分割出力する（非対話版）。
-- 設定は下の定数を直接書き換えてください。
-- 実行: d:\gramdata\hplt で python mecab.py
-- 出力先: OUT_DIR 配下（デフォルト: data）
-- 5 ファイル生成ごとに自動で git add/commit/push を行います（ENABLE_GIT を False にすると無効化）
+Sudachi を使って hplt データの JSONL (text フィールド) から日本語トークンを抽出し、
+1-7 gram をカウントして {n}hplt{index:04d}.txt 形式で出力するスクリプト。
+- 設定は下の定数を直接編集してください（引数は使いません）。
+- 出力先: OUT_DIR（デフォルト: d:\gramdata\hplt\data 相対）
+- ファイルは目標サイズ（SIZE_MB）ごとにローテーション
+- 生成したファイルを GIT_BATCH 個ごとに自動で git add/commit/push（ENABLE_GIT=True の場合）
 """
 from pathlib import Path
 import json
@@ -14,25 +15,33 @@ import random
 import subprocess
 from collections import Counter
 
+# Sudachi import
 try:
-    import MeCab
+    from sudachipy import dictionary, tokenizer as sud_tokenizer
 except Exception:
-    print("mecab-python3 が必要です: pip install mecab-python3", file=sys.stderr)
+    print("SudachiPy が必要です: pip install sudachipy sudachidict_core などの辞書を導入してください", file=sys.stderr)
     raise SystemExit(1)
 
 # --- 設定（ここを直接変更してください） ---
-IN_DIR = Path(".")             # 入力ディレクトリ（実行場所に合わせる）
-PATTERN = "10_*.jsonl"        # 処理するファイルパターン
-OUT_DIR = Path("data")         # 出力先（gramdata/hplt/data）
-SIZE_MB = 50                   # 目標ファイルサイズ（MB）
-ENABLE_GIT = True              # True のとき自動で git add/commit/push を行う
-GIT_BATCH = 5                  # 何ファイルごとに git push するか
-NGRAM_MAX = 7                  # 何グラムまで作るか
-GIT_RETRIES = 6                # git push のリトライ回数
+IN_DIR = Path(".")                # 入力ディレクトリ（実行場所に合わせる）
+PATTERN = "10_*.jsonl"            # JSONL ファイルパターン
+OUT_DIR = Path("data")            # 出力先（例: gramdata/hplt/data）
+SIZE_MB = 50                      # 目標ファイルサイズ（MB）
+ENABLE_GIT = True                 # True で自動コミット/プッシュ
+GIT_BATCH = 5                     # 何ファイルごとにプッシュするか
+NGRAM_MAX = 7                     # n-gram の最大 n
+GIT_RETRIES = 6                   # push リトライ回数
+SPLIT_MODE = sud_tokenizer.Tokenizer.SplitMode.B  # B は MeCab と近い粒度のことが多い
 # ------------------------------------------------
 
 _pending_files = []
 _repo_root = None
+
+# 日本語判定（ひらがな/カタカナ/漢字を含むトークンを日本語とみなす）
+_JP_RE = re.compile(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]')
+
+def is_japanese_token(s: str) -> bool:
+    return bool(_JP_RE.search(s))
 
 def get_git_root(start_path: Path):
     try:
@@ -88,6 +97,10 @@ def _maybe_flush_pending():
         commit_and_push(to_commit, _repo_root)
 
 def jsonl_iter_texts(path: Path):
+    """
+    JSONL を一行ずつ読み、"text" フィールドの文字列を yield する。
+    フォールバックで簡易抽出も試みる。
+    """
     txt_re = re.compile(r'"text"\s*:\s*"')
     for raw in path.open("r", encoding="utf-8", errors="replace"):
         line = raw.rstrip("\n")
@@ -101,26 +114,34 @@ def jsonl_iter_texts(path: Path):
                     yield t
                     continue
         except Exception:
-            m = txt_re.search(line)
-            if m:
-                try:
-                    m2 = re.search(r'"text"\s*:\s*"((?:\\.|[^"\\])*)"', line)
-                    if m2:
-                        rawtxt = m2.group(1)
-                        # JSON のエスケープを戻す
+            if txt_re.search(line):
+                # 簡易抽出（完全ではないが fallback）
+                m2 = re.search(r'"text"\s*:\s*"((?:\\.|[^"\\])*)"', line)
+                if m2:
+                    rawtxt = m2.group(1)
+                    try:
                         t = bytes(rawtxt, "utf-8").decode("unicode_escape")
                         yield t
                         continue
-                except Exception:
-                    pass
+                    except Exception:
+                        pass
             continue
 
-def tokenize_wakati(text, tagger):
-    s = tagger.parse(text)
-    if not s:
+def tokenize_sudachi(text: str, tok):
+    """
+    Sudachi でトークン化し、日本語と判定できるトークンだけ返す（表層形）
+    """
+    try:
+        ms = tok.tokenize(text, SPLIT_MODE)
+    except Exception:
+        # 失敗したら空
         return []
-    tokens = s.strip().split()
-    return tokens
+    surfaces = []
+    for m in ms:
+        s = m.surface()
+        if is_japanese_token(s):
+            surfaces.append(s)
+    return surfaces
 
 def write_counter_to_file(counter: Counter, out_dir: Path, n: int, index: int):
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -151,7 +172,9 @@ def process_files():
         if _repo_root is None:
             print("警告: git リポジトリが見つかりません。自動コミットは無効になります。", file=sys.stderr)
 
-    tagger = MeCab.Tagger("-Owakati")
+    # Sudachi tokenizer 作成
+    sud = dictionary.Dictionary().create()
+
     counters = {n: Counter() for n in range(1, NGRAM_MAX+1)}
     indexes = {n: 0 for n in range(1, NGRAM_MAX+1)}
     sizes = {n: 0 for n in range(1, NGRAM_MAX+1)}
@@ -164,7 +187,7 @@ def process_files():
     for src in files:
         print(f"処理中: {src.name}")
         for text in jsonl_iter_texts(src):
-            tokens = tokenize_wakati(text, tagger)
+            tokens = tokenize_sudachi(text, sud)
             if not tokens:
                 continue
             L = len(tokens)
@@ -192,7 +215,7 @@ def process_files():
             counters[n].clear()
             _maybe_flush_pending()
 
-    # final git push for leftovers
+    # 最後の残りを push
     if ENABLE_GIT and _repo_root is not None and _pending_files:
         to_commit = _pending_files[:]
         _pending_files = []
