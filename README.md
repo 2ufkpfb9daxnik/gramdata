@@ -8,7 +8,11 @@ nwc2010/charか、nwc2010/word以下に、入っています。word/over9を基�
 - [新下駄配列](https://y-koutarou.hatenablog.com/entry/2025/05/07/005724)
 - [月見草](https://w.atwiki.jp/keylay/pages/16.html)
 
-wikipediaのものは多分以下のどれかですが、正直覚えていない
+wikipediaのものは2種類あります
+
+1. [wikipediaのダンプファイルから自前で作成したもの(これは元リンク)](https://huggingface.co/datasets/range3/wiki40b-ja)
+
+2. 岡俊之さんのものは多分以下のどれかですが、正直覚えていない
 
 - [https://gist.github.com/oktopus1959/812559dba7fa1c46c159e8c28788b3f6](https://gist.github.com/oktopus1959/812559dba7fa1c46c159e8c28788b3f6)
 - [https://gist.github.com/oktopus1959/ccf2703fbffb84cdad1ff2fdfc38a277](https://gist.github.com/oktopus1959/ccf2703fbffb84cdad1ff2fdfc38a277)
