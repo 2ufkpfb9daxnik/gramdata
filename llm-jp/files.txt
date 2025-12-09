@@ -1,0 +1,32 @@
+以下はでかすぎて扱えないので、ランダムサンプリングをやる
+ファイルインデックスを記録する
+
+cc
+level0 1619.jsonl.gz まで
+level1 0415.jsonl.gz まで
+level2 0404.jsonl.gz まで
+
+fineweb-2
+1670.jsonl.gz まで
+
+patent
+0620.jsonl.gz まで
+
+sip_comprehensive_html
+20240824-20240920.toxicity_filtered 0049.jsonl.gz まで
+20240921-20240930.toxicity_filtered 0054.jsonl.gz まで
+20241001-20241019.toxicity_filtered 0040.jsonl.gz まで
+20241020-20241031.toxicity_filtered 0011.jsonl.gz まで
+20241101-20241116.toxicity_filtered 0022.jsonl.gz まで
+
+sip_comprehensive_pdf
+pdf2text 0154.jsonl.gz まで
+surya 0000.jsonl.gz まで
+
+warp_html
+html_nii_01-90 / main が 0000, 
+html_nii_01-90 / others が 0001 まで
+
+warp_pdf
+e0.2 0412.jsonl.gz まで
+e0 0412.jsonl.gz まで

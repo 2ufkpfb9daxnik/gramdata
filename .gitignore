@@ -12,3 +12,8 @@ __pycache__/
 *.zst
 *.sqlite*
 *.tsv
+*.bz2
+*.gz
+*.jsonl
+*.parquet
+*.zip

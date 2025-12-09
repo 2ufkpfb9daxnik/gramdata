@@ -1,0 +1,81 @@
+https://gitlab.llm-jp.nii.ac.jp/datasets/llm-jp-corpus-v4/-/blob/main/README-ja.md
+. (Total File Size : 33TB) (Total token # : 19.5T)
+├── ja (688B)
+│   ├── ja_aozorabunko (0.1B)
+│   ├── ja_cc (223B)
+│   │   ├── level0
+│   │   ├── level1
+│   │   └── level2
+│   ├── ja_e-gov (0.08B)
+│   ├── ja_fineweb-2 (236B)
+│   ├── ja_kaken (0.9B)
+│   ├── ja_kokkai_giji (0.8B)
+│   ├── ja_nwc2010 (16B)
+│   ├── ja_patent (68B)
+│   ├── ja_sip_comprehensive_html (11B)
+│   ├── ja_sip_comprehensive_pdf (30B)
+│   │   ├── pdf2text
+│   │   └── surya
+│   ├── ja_warp_html (0.8B)
+│   ├── ja_warp_pdf (58B)
+│   │   ├── e0
+│   │   └── e0.2
+│   └── ja_wiki (1B)
+
+
+ja_aozorabunko
+    青空文庫のテキスト
+    一次配布先: https://huggingface.co/datasets/globis-university/aozorabunko-clean
+    ライセンス: CC BY 4.0
+
+ja_cc
+    Common Crawl全量からテキスト抽出、フィルタリングした日本語コーパス
+    フィルタリングにはUzushioを利用
+        level0: 重複ページを含まない
+        level1: 少量の重複部分があるページが含まれる可能性があるが、ほとんどはユニーク
+        level2: level1とは別に少量の重複部分があるページが含まれる可能性があるが、ほとんどはユニーク
+    実際に使用したフィルタリング設定はここを参照
+    詳細はこれらのQiita記事を参照
+    ライセンス: ODC-BY (このデータセットを利用する場合は、 Common Crawl terms of use にも従う必要があります。)
+
+ja_e-gov
+    e-Gov法令テキスト
+    一次配布先: https://huggingface.co/datasets/nlp-waseda/e_gov
+    ライセンス: CC BY 4.0
+
+ja_fineweb-2
+    Common Crawlからテキスト抽出、フィルタリングされ多言語データセットであるFineWeb 2の日本語部分
+    一次配布先: https://huggingface.co/datasets/HuggingFaceFW/fineweb-2
+    ライセンス: ODC-BY (このデータセットを利用する場合は、 Common Crawl terms of use にも従う必要があります。)
+
+ja_kaken
+    KAKEN (科学研究費助成事業データベース) における各研究課題の概要テキスト
+    ライセンス: CC BY 4.0
+
+ja_kokkai_gijix
+    国会会議録検索システム検索用APIで取得、抽出した国会会議録テキスト
+    ライセンス: CC BY 4.0
+
+ja_nwc2010
+    日本語ウェブコーパス2010 HTMLアーカイブからUzushioを用いてテキスト抽出、フィルタリングした日本語コーパス
+    ライセンス: CC BY 4.0
+
+ja_patent
+    特許庁が公開している公報データファイルから抽出された公報テキスト
+    ライセンス: CC BY 4.0
+
+ja_sip_comprehensive_html/ja_sip_comprehensive_pdf
+    戦略的イノベーション創造プログラム(SIP)第3期課題「統合型ヘルスケアシステムの構築における生成AI活用」において構築された汎用ウェブコーパス
+    一次配布先: https://gitlab.med-jp.nii.ac.jp/datasets/sip3-ja-general-web-corpus
+    ライセンス: CC BY 4.0
+
+ja_warp_html/ja_warp_pdf
+    国立国会図書館インターネット資料収集保存事業（WARP）で収集されたWebサイトのURL (当該URLリストは同館から提供) を基にクロールし抽出したテキスト
+ja_warp_html: HTMLから抽出したテキスト
+    ja_warp_pdf/e0: Word, TeX, 一太郎で作成されたPDFから抽出したテキスト
+    ja_warp_pdf/e0.2: PowerPointやExcelなどで作成されたPDFから抽出したテキスト
+ライセンス: CC BY 4.0
+
+ja_wiki(これだけはwiki40b-jaから取ってきたので違います)
+    日本語Wikipedia (20230720版)
+    ライセンス: CC BY-SA 3.0
